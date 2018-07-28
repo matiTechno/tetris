@@ -249,17 +249,6 @@ private:
 	bool cActive(int control) const { return keys_.pressed[control] || keys_.held[control]; }
 };
 
-struct Rotation
-{
-	enum
-	{
-		d0,
-		d90,
-		d180,
-		d270,
-	};
-};
-
 struct Tetrimino
 {
 	enum Type

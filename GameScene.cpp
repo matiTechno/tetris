@@ -142,84 +142,337 @@ bool isCollision(Tetrimino& tetrimino, const Map& map)
 	return false;
 }
 
+Tetrimino::Box getBoxI(int rotation)
+{
+	Tetrimino::Box box;
+	switch (rotation)
+	{
+	case 0:
+		box = {
+			0, 1, 0, 0,
+			0, 1, 0, 0,
+			0, 1, 0, 0,
+			0, 1, 0, 0 };
+		break;
+	case 90:
+		box = {
+			0, 0, 0, 0,
+			0, 0, 0, 0,
+			1, 1, 1, 1,
+			0, 0, 0, 0 };
+		break;
+	case 180:
+		box = {
+			0, 0, 1, 0,
+			0, 0, 1, 0,
+			0, 0, 1, 0,
+			0, 0, 1, 0 };
+		break;
+	case 270:
+		box = {
+			0, 0, 0, 0,
+			1, 1, 1, 1,
+			0, 0, 0, 0,
+			0, 0, 0, 0 };
+		break;
+	}
+	return box;
+}
+
+Tetrimino::Box getBoxO(int rotation)
+{
+	Tetrimino::Box box;
+	switch (rotation)
+	{
+	case 0:
+		box = {
+			0, 1, 1, 0,
+			0, 1, 1, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0 };
+		break;
+	case 90:
+		box = {
+			0, 1, 1, 0,
+			0, 1, 1, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0 };
+		break;
+	case 180:
+		box = {
+			0, 1, 1, 0,
+			0, 1, 1, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0 };
+		break;
+	case 270:
+		box = {
+			0, 1, 1, 0,
+			0, 1, 1, 0,
+			0, 0, 0, 0,
+			0, 0, 0, 0 };
+		break;
+	}
+	return box;
+}
+
+Tetrimino::Box getBoxT(int rotation)
+{
+	Tetrimino::Box box;
+	switch (rotation)
+	{
+	case 0:
+		box = {
+			0, 1, 0,
+			1, 1, 1,
+			0, 0, 0 };
+		break;
+	case 90:
+		box = {
+			0, 1, 0,
+			1, 1, 0,
+			0, 1, 0 };
+		break;
+	case 180:
+		box = {
+			0, 0, 0,
+			1, 1, 1,
+			0, 1, 0 };
+		break;
+	case 270:
+		box = {
+			0, 1, 0,
+			0, 1, 1,
+			0, 1, 0 };
+		break;
+	}
+	return box;
+}
+
+Tetrimino::Box getBoxS(int rotation)
+{
+	Tetrimino::Box box;
+	switch (rotation)
+	{
+	case 0:
+		box = {
+			0, 1, 1,
+			1, 1, 0,
+			0, 0, 0 };
+		break;
+	case 90:
+		box = {
+			1, 0, 0,
+			1, 1, 0,
+			0, 1, 0 };
+		break;
+	case 180:
+		box = {
+			0, 0, 0,
+			0, 1, 1,
+			1, 1, 0 };
+		break;
+	case 270:
+		box = {
+			0, 1, 0,
+			0, 1, 1,
+			0, 0, 1 };
+		break;
+	}
+	return box;
+}
+
+Tetrimino::Box getBoxZ(int rotation)
+{
+	Tetrimino::Box box;
+	switch (rotation)
+	{
+	case 0:
+		box = {
+			1, 1, 0,
+			0, 1, 1,
+			0, 0, 0 };
+		break;
+	case 90:
+		box = {
+			0, 1, 0,
+			1, 1, 0,
+			1, 0, 0 };
+		break;
+	case 180:
+		box = {
+			0, 0, 0,
+			1, 1, 0,
+			0, 1, 1 };
+		break;
+	case 270:
+		box = {
+			0, 0, 1,
+			0, 1, 1,
+			0, 1, 0 };
+		break;
+	}
+	return box;
+}
+
+Tetrimino::Box getBoxJ(int rotation)
+{
+	Tetrimino::Box box;
+	switch (rotation)
+	{
+	case 0:
+		box = {
+			1, 0, 0,
+			1, 1, 1,
+			0, 0, 0 };
+		break;
+	case 90:
+		box = {
+			0, 1, 0,
+			0, 1, 0,
+			1, 1, 0 };
+		break;
+	case 180:
+		box = {
+			0, 0, 0,
+			1, 1, 1,
+			0, 0, 1 };
+		break;
+	case 270:
+		box = {
+			0, 1, 1,
+			0, 1, 0,
+			0, 1, 0 };
+		break;
+	}
+	return box;
+}
+
+Tetrimino::Box getBoxL(int rotation)
+{
+	Tetrimino::Box box;
+	switch (rotation)
+	{
+	case 0:
+		box = {
+			0, 0, 1,
+			1, 1, 1,
+			0, 0, 0 };
+		break;
+	case 90:
+		box = {
+			1, 1, 0,
+			0, 1, 0,
+			0, 1, 0 };
+		break;
+	case 180:
+		box = {
+			0, 0, 0,
+			1, 1, 1,
+			1, 0, 0 };
+		break;
+	case 270:
+		box = {
+			0, 1, 0,
+			0, 1, 0,
+			0, 1, 1 };
+		break;
+	}
+	return box;
+}
+
 void spawnNewTetrimino(Tetrimino& t)
 {
 	t.pos = ivec2(3.f, 0.f);
 	t.type = getRandomInt(0, Tetrimino::NumTypes - 1);
-	t.rotation = Rotation::d0;
-	t.box = {};
+	t.rotation = 0;
 
 	switch (t.type)
 	{
 	case Tetrimino::I:;
 		t.color = vec4(0.f, 1.f, 1.f, 1.f);
 		t.boxSide = 4;
-		t.box = {
-			0, 1, 0, 0,
-			0, 1, 0, 0,
-			0, 1, 0, 0,
-			0, 1, 0, 0 };
+		t.box = getBoxI(t.rotation);
 		break;
 
 	case Tetrimino::O:
 		t.color = vec4(1.f, 1.f, 0.f, 1.f);
-		t.boxSide = 3;
-		t.box = {
-			0, 1, 1,
-			0, 1, 1,
-			0, 0, 0 };
+		t.boxSide = 4;
+		t.box = getBoxO(t.rotation);
 		break;
 
 	case Tetrimino::T:;
 		t.color = vec4(1.f, 0.f, 1.f, 1.f);
 		t.boxSide = 3;
-		t.box = {
-			0, 1, 0,
-			0, 1, 0,
-			1, 1, 1 };
+		t.box = getBoxT(t.rotation);
 		break;
 
 	case Tetrimino::S:;
 		t.color = vec4(0.f, 1.f, 0.f, 1.f);
 		t.boxSide = 3;
-		t.box = {
-			0, 1, 1,
-			1, 1, 0,
-			0, 0, 0 };
+		t.box = getBoxS(t.rotation);
 		break;
 
 	case Tetrimino::Z:;
 		t.color = vec4(1.f, 0.f, 0.f, 1.f);
 		t.boxSide = 3;
-		t.box = {
-			1, 1, 0,
-			0, 1, 1,
-			0, 0, 0 };
+		t.box = getBoxZ(t.rotation);
 		break;
 
 	case Tetrimino::J:;
 		t.color = vec4(0.f, 0.f, 1.f, 1.f);
 		t.boxSide = 3;
-		t.box = {
-			1, 0, 0,
-			1, 1, 1,
-			0, 0, 0 };
+		t.box = getBoxJ(t.rotation);
 		break;
 
 	case Tetrimino::L:;
 		t.color = vec4(1.f, 0.5f, 0.f, 1.f);
 		t.boxSide = 3;
-		t.box = {
-			0, 0, 1,
-			1, 1, 1,
-			0, 0, 0 };
+		t.box = getBoxL(t.rotation);
 		break;
 	}
 }
 
 void rotate(bool cw, Tetrimino& t)
 {
+	t.rotation += cw ? -90 : 90;
 
+	if (t.rotation == -90)
+		t.rotation = 270;
+
+	else if (t.rotation == 360)
+		t.rotation = 0;
+
+	switch (t.type)
+	{
+	case Tetrimino::I:;
+		t.box = getBoxI(t.rotation);
+		break;
+
+	case Tetrimino::O:
+		t.box = getBoxO(t.rotation);
+		break;
+
+	case Tetrimino::T:;
+		t.box = getBoxT(t.rotation);
+		break;
+
+	case Tetrimino::S:;
+		t.box = getBoxS(t.rotation);
+		break;
+
+	case Tetrimino::Z:;
+		t.box = getBoxZ(t.rotation);
+		break;
+
+	case Tetrimino::J:;
+		t.box = getBoxJ(t.rotation);
+		break;
+
+	case Tetrimino::L:;
+		t.box = getBoxL(t.rotation);
+		break;
+	}
 }
 
 GameScene::GameScene()
@@ -274,7 +527,7 @@ void GameScene::processInput(const Array<WinEvent>& events)
 			else if (event.key.key == GLFW_KEY_SPACE)
 			{
 				while (!isCollision(tetrimino_, map_))
-					tetrimino_.pos.y += 2;
+					tetrimino_.pos.y += 1;
 
 				tetrimino_.pos.y -= 1;
 			}
