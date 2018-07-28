@@ -33,18 +33,14 @@ struct tvec4
 
 	//                @ const tvec4& ?
 	tvec4& operator+=(tvec4 v) { x += v.x; y += v.y; z += v.z; w += v.w; return *this; }
-	tvec4& operator+=(T v) { x += v; y += v; z += v; w += v; return *this; }
 	tvec4& operator-=(tvec4 v) { x -= v.x; y -= v.y; z -= v.z; w -= v.w; return *this; }
-	tvec4& operator-=(T v) { x -= v; y -= v; z -= v; w -= v; return *this; }
 	tvec4& operator*=(tvec4 v) { x *= v.x; y *= v.y; z *= v.z; w *= v.w; return *this; }
 	tvec4& operator*=(T v) { x *= v; y *= v; z *= v; w *= v; return *this; }
 	tvec4& operator/=(tvec4 v) { x /= v.x; y /= v.y; z /= v.z; w /= v.w;  return *this; }
 	tvec4& operator/=(T v) { x /= v; y /= v; z /= v; w /= v; return *this; }
 
 	tvec4 operator+(tvec4 v) const { return { x + v.x, y + v.y, z + v.z, w + v.w }; }
-	tvec4 operator+(T v)     const { return { x + v, y + v, z + v, w + v }; }
 	tvec4 operator-(tvec4 v) const { return { x - v.x, y - v.y, z - v.z, w - v.w }; }
-	tvec4 operator-(T v)     const { return { x - v, y - v, z - v, w - v }; }
 	tvec4 operator-()        const { return { -x, -y, -z, -w }; }
 	tvec4 operator*(tvec4 v) const { return { x * v.x, y * v.y, z * v.z, w * v.w }; }
 	tvec4 operator*(T v)     const { return { x * v, y * v, z * v, w * v }; }
@@ -86,18 +82,14 @@ struct tvec3
 
 	//                @ const tvec3& ?
 	tvec3& operator+=(tvec3 v) { x += v.x; y += v.y; z += v.z; return *this; }
-	tvec3& operator+=(T v) { x += v; y += v; z += v; return *this; }
 	tvec3& operator-=(tvec3 v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
-	tvec3& operator-=(T v) { x -= v; y -= v; z -= v; return *this; }
 	tvec3& operator*=(tvec3 v) { x *= v.x; y *= v.y; z *= v.z; return *this; }
 	tvec3& operator*=(T v) { x *= v; y *= v; z *= v; return *this; }
 	tvec3& operator/=(tvec3 v) { x /= v.x; y /= v.y; z /= v.z; return *this; }
 	tvec3& operator/=(T v) { x /= v; y /= v; z /= v; return *this; }
 
 	tvec3 operator+(tvec3 v) const { return { x + v.x, y + v.y, z + v.z }; }
-	tvec3 operator+(T v)     const { return { x + v, y + v, z + v }; }
 	tvec3 operator-(tvec3 v) const { return { x - v.x, y - v.y, z - v.z }; }
-	tvec3 operator-(T v)     const { return { x - v, y - v, z - v }; }
 	tvec3 operator-()        const { return { -x, -y, -z }; }
 	tvec3 operator*(tvec3 v) const { return { x * v.x, y * v.y, z * v.z }; }
 	tvec3 operator*(T v)     const { return { x * v, y * v, z * v }; }
@@ -139,18 +131,14 @@ struct tvec2
 
 	//                @ const tvec2& ?
 	tvec2& operator+=(tvec2 v) { x += v.x; y += v.y; return *this; }
-	tvec2& operator+=(T v) { x += v; y += v; return *this; }
 	tvec2& operator-=(tvec2 v) { x -= v.x; y -= v.y; return *this; }
-	tvec2& operator-=(T v) { x -= v; y -= v; return *this; }
 	tvec2& operator*=(tvec2 v) { x *= v.x; y *= v.y; return *this; }
 	tvec2& operator*=(T v) { x *= v; y *= v; return *this; }
 	tvec2& operator/=(tvec2 v) { x /= v.x; y /= v.y; return *this; }
 	tvec2& operator/=(T v) { x /= v; y /= v; return *this; }
 
 	tvec2 operator+(tvec2 v) const { return { x + v.x, y + v.y }; }
-	tvec2 operator+(T v)     const { return { x + v, y + v }; }
 	tvec2 operator-(tvec2 v) const { return { x - v.x, y - v.y }; }
-	tvec2 operator-(T v)     const { return { x - v, y - v }; }
 	tvec2 operator-()        const { return { -x, -y }; }
 	tvec2 operator*(tvec2 v) const { return { x * v.x, y * v.y }; }
 	tvec2 operator*(T v)     const { return { x * v, y * v }; }

@@ -840,6 +840,9 @@ int main()
         GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
         window = glfwCreateWindow(mode->width, mode->height, "tetris", monitor, nullptr);
+
+		// fuck windows debugger
+        //window = glfwCreateWindow(600, 600, "tetris", nullptr, nullptr);
     }
 
     if(!window)

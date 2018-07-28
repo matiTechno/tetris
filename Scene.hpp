@@ -249,6 +249,49 @@ private:
 	bool cActive(int control) const { return keys_.pressed[control] || keys_.held[control]; }
 };
 
+struct Rotation
+{
+	enum
+	{
+		d0,
+		d90,
+		d180,
+		d270,
+	};
+};
+
+struct Tetrimino
+{
+	enum Type
+	{
+		I,
+		O,
+		T,
+		S,
+		Z,
+		J,
+		L,
+		NumTypes
+	};
+
+	struct Box { bool d[16]; };
+
+	ivec2 pos;
+	int rotation;
+	int type;
+	vec4 color;
+	Box box;
+	int boxSide;
+};
+
+
+struct Map
+{
+	ivec2 size = ivec2(10, 20);
+	Rect rects[10 * 20]; // meeh
+	const vec4 baseColor = vec4(0.2f, 0.f, 0.5f, 1.f);
+};
+
 class GameScene: public Scene
 {
 public:
@@ -262,4 +305,7 @@ private:
 	Camera3d camera_;
 	GLBuffers glBuffers_;
 	Font font_;
+
+	Map map_;
+	Tetrimino tetrimino_;
 };
