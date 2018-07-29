@@ -527,7 +527,7 @@ void GameScene::processInput(const Array<WinEvent>& events)
                                 spawnNewTetrimino(tetNext_);
 
                                 gameOver_ = false;
-
+				score_ = 0;
                         }
 
                         if(gameOver_)
