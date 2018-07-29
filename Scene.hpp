@@ -296,6 +296,8 @@ private:
 	Font font_;
 
 	Map map_;
-	Tetrimino tetrimino_;
+	Tetrimino tetrimino_, tetNext_;
         bool executeStep_ = false;
+        bool gameOver_ = false;
+        int score_ = 0.f;
 };

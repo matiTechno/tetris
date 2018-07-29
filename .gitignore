@@ -4,3 +4,4 @@ visual_studio/x64
 imgui.ini
 tetris
 tetris.dSYM
+*.trace
