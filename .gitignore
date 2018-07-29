@@ -3,3 +3,4 @@ visual_studio/.vs
 visual_studio/x64
 imgui.ini
 tetris
+tetris.dSYM
