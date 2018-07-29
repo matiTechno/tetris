@@ -278,7 +278,7 @@ struct Map
 {
 	ivec2 size = ivec2(10, 20);
 	Rect rects[10 * 20]; // meeh
-	const vec4 baseColor = vec4(0.2f, 0.f, 0.5f, 1.f);
+	const vec4 baseColor = vec4(0.3f, 0.f, 0.5f, 1.f);
 };
 
 class GameScene: public Scene
@@ -297,4 +297,5 @@ private:
 
 	Map map_;
 	Tetrimino tetrimino_;
+        bool executeStep_ = false;
 };
