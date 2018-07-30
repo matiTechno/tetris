@@ -114,6 +114,7 @@ struct WinEvent
 };
 
 // call bindeProgram() first
+void uniformMat4(GLuint program, const char* name, const mat4& m);
 void uniform1i(GLuint program, const char* name, int i);
 void uniform1f(GLuint program, const char* name, float f);
 void uniform2f(GLuint program, const char* name, float f1, float f2);
@@ -297,7 +298,14 @@ private:
 
 	Map map_;
 	Tetrimino tetrimino_, tetNext_;
-        bool executeStep_ = false;
-        bool gameOver_ = false;
-        int score_ = 0.f;
+    bool executeStep_ = false;
+    bool gameOver_ = false;
+    int score_ = 0.f;
+
+	GLuint p3d_;
+	GLuint vboQube_;
+	GLuint vboIA_; // instanced attributes
+	GLuint vao_;
+
+	bool enableCameraInput_ = false;
 };

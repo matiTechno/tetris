@@ -2,6 +2,7 @@
 #include "imgui/imgui.h"
 #include <GLFW/glfw3.h>
 #include <stdio.h>
+#include "glad.h"
 
 Camera3d::Camera3d()
 {
@@ -476,6 +477,273 @@ void rotate(bool cw, Tetrimino& t)
         }
 }
 
+struct Vertex
+{
+	vec3 pos;
+	vec2 texCoord;
+	vec3 normal;
+};
+
+static Vertex qubeModel[36] = {
+	// 1
+	{
+		vec3(-0.5f, -0.5f, -0.5f),
+		vec2(0.0f, 0.0f),
+		vec3(0.0f,  0.0f, -1.0f),
+	},
+	{
+		vec3(0.5f, 0.5f, -0.5f),
+		vec2(1.0f, 1.0f),
+		vec3(0.0f,  0.0f, -1.0f),
+	},
+	{
+		vec3(0.5f, -0.5f, -0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(0.0f,  0.0f, -1.0f),
+	},
+	{
+		vec3(0.5f, 0.5f, -0.5f),
+		vec2(1.0f, 1.0f),
+		vec3(0.0f,  0.0f, -1.0f),
+	},
+	{
+		vec3(-0.5f, -0.5f, -0.5f),
+		vec2(0.0f, 0.0f),
+		vec3(0.0f,  0.0f, -1.0f),
+	},
+	{
+		vec3(-0.5f, 0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(0.0f,  0.0f, -1.0f),
+	},
+	// 2
+	{
+
+		vec3(-0.5f, -0.5f, 0.5f),
+		vec2(0.0f, 0.0f),
+		vec3(0.0f,  0.0f,  1.0f)
+	},
+	{
+
+		vec3(0.5f, -0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(0.0f,  0.0f,  1.0f)
+	},
+	{
+
+		vec3(0.5f, 0.5f, 0.5f),
+		vec2(1.0f, 1.0f),
+		vec3(0.0f,  0.0f,  1.0f)
+	},
+	{
+
+		vec3(0.5f, 0.5f, 0.5f),
+		vec2(1.0f, 1.0f),
+		vec3(0.0f,  0.0f,  1.0f)
+	},
+	{
+
+		vec3(-0.5f, 0.5f, 0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(0.0f,  0.0f,  1.0f)
+	},
+	{
+
+		vec3(-0.5f, -0.5f, 0.5f),
+		vec2(0.0f, 0.0f),
+		vec3(0.0f,  0.0f,  1.0f)
+	},
+	// 3
+	{
+
+		vec3(-0.5f, 0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(-1.0f,  0.0f,  0.0f)
+	},
+	{
+
+		vec3(-0.5f, 0.5f, -0.5f),
+		vec2(1.0f, 1.0f),
+		vec3(-1.0f,  0.0f,  0.0f)
+	},
+	{
+
+		vec3(-0.5f, -0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(-1.0f,  0.0f,  0.0f)
+	},
+	{
+
+		vec3(-0.5f, -0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(-1.0f,  0.0f,  0.0f)
+	},
+	{
+		vec3(-0.5f, -0.5f, 0.5f),
+		vec2(0.0f, 0.0f),
+		vec3(-1.0f,  0.0f,  0.0f)
+	},
+	{
+		vec3(-0.5f, 0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(-1.0f,  0.0f,  0.0f)
+	},
+	// 4
+	{
+		vec3(0.5f, 0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(1.0f,  0.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, -0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(1.0f,  0.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, 0.5f, -0.5f),
+		vec2(1.0f, 1.0f),
+		vec3(1.0f,  0.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, -0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(1.0f,  0.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, 0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(1.0f,  0.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, -0.5f, 0.5f),
+		vec2(0.0f, 0.0f),
+		vec3(1.0f,  0.0f,  0.0f)
+	},
+	// 5
+	{
+		vec3(-0.5f, -0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(0.0f, -1.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, -0.5f, -0.5f),
+		vec2(1.0f, 1.0f),
+		vec3(0.0f, -1.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, -0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(0.0f, -1.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, -0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(0.0f, -1.0f,  0.0f)
+	},
+	{
+		vec3(-0.5f, -0.5f, 0.5f),
+		vec2(0.0f, 0.0f),
+		vec3(0.0f, -1.0f,  0.0f)
+	},
+	{
+		vec3(-0.5f, -0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(0.0f, -1.0f,  0.0f)
+	},
+	// 6
+	{
+		vec3(-0.5f, 0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(0.0f,  1.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, 0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(0.0f,  1.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, 0.5f, -0.5f),
+		vec2(1.0f, 1.0f),
+		vec3(0.0f,  1.0f,  0.0f)
+	},
+	{
+		vec3(0.5f, 0.5f, 0.5f),
+		vec2(1.0f, 0.0f),
+		vec3(0.0f,  1.0f,  0.0f)
+	},
+	{
+		vec3(-0.5f, 0.5f, -0.5f),
+		vec2(0.0f, 1.0f),
+		vec3(0.0f,  1.0f,  0.0f)
+	},
+	{
+		vec3(-0.5f, 0.5f, 0.5f),
+		vec2(0.0f, 0.0f),
+		vec3(0.0f,  1.0f,  0.0f)
+	}
+};
+
+struct QubeInstance
+{
+	vec4 color;
+	mat4 modelMatrix;
+};
+
+const char* const vert3d = R"(
+#version 330
+
+// per vertex
+layout(location = 0) in vec3 vertex;
+layout(location = 1) in vec2 texCoord;
+layout(location = 2) in vec3 normal;
+
+// per instance
+layout(location = 3) in vec4 color;
+layout(location = 4) in mat4 model;
+
+uniform mat4 projection;
+uniform mat4 view;
+
+out vec3 vPos;
+out vec2 vTexCoord;
+out vec3 vNormal;
+out vec4 vColor;
+
+void main()
+{
+    vec4 pos = model * vec4(vertex, 1.0);
+    vPos = pos.xyz;
+    gl_Position = projection * view * pos;
+    vTexCoord = texCoord;
+    vNormal = mat3(transpose(inverse(model))) * normal;
+	vColor = color;
+}
+)";
+
+const char* const frag3d = R"(
+#version 330
+
+uniform mat4 view;
+uniform vec3 lightPos;
+uniform vec3 lightColor = vec3(1.0, 1.0, 1.0);
+//uniform sampler2D diffuse;
+
+in vec3 vPos;
+in vec2 vTexCoord;
+in vec3 vNormal;
+in vec4 vColor;
+
+out vec4 oColor;
+
+void main()
+{
+    oColor = vColor;
+	vec3 lightDir = normalize(vPos - lightPos);
+	oColor.xyz *= lightColor * max(0.0, dot(-lightDir, normalize(vNormal)));
+	oColor.xyz += vec3(0.15) * vColor.xyz; // ambient
+}
+)";
+
 GameScene::GameScene()
 {
         glEnable(GL_BLEND);
@@ -483,6 +751,55 @@ GameScene::GameScene()
 
         glBuffers_ = createGLBuffers();
         font_ = createFontFromFile("res/Exo2-Black.otf", 38, 512);
+
+		p3d_ = createProgram(vert3d, frag3d);
+		assert(p3d_);
+
+		glGenBuffers(1, &vboQube_);
+		glGenBuffers(1, &vboIA_);
+		glGenVertexArrays(1, &vao_);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vboQube_);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(qubeModel), qubeModel, GL_STATIC_DRAW);
+
+		glBindVertexArray(vao_);
+
+		// pos
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+		glEnableVertexAttribArray(0);
+		
+		// texCoord
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)sizeof(vec3));
+		glEnableVertexAttribArray(1);
+
+		// normal
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) (sizeof(vec3) + sizeof(vec2)) );
+		glEnableVertexAttribArray(2);
+
+		// instanced attributes
+		glBindBuffer(GL_ARRAY_BUFFER, vboIA_);
+
+		// color
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+		glEnableVertexAttribArray(3);
+		glVertexAttribDivisor(3, 1);
+
+		// model matrix
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)sizeof(vec4));
+		glEnableVertexAttribArray(4);
+		glVertexAttribDivisor(4, 1);
+
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(vec4) * 2));
+		glEnableVertexAttribArray(5);
+		glVertexAttribDivisor(5, 1);
+
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(vec4) * 3));
+		glEnableVertexAttribArray(6);
+		glVertexAttribDivisor(6, 1);
+
+		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(vec4) * 4));
+		glEnableVertexAttribArray(7);
+		glVertexAttribDivisor(7, 1);
 
         for (int y = 0; y < map_.size.y; ++y)
         {
@@ -499,18 +816,26 @@ GameScene::GameScene()
 
         spawnNewTetrimino(tetrimino_);
         spawnNewTetrimino(tetNext_);
+
+		camera_.pos = vec3(0.f, 1.f, 5.f);
 }
 
 GameScene::~GameScene()
 {
         deleteGLBuffers(glBuffers_);
         deleteFont(font_);
+
+		deleteProgram(p3d_);
+		glDeleteBuffers(1, &vboQube_);
+		glDeleteBuffers(1, &vboIA_);
+		glDeleteVertexArrays(1, &vao_);
 }
 
 void GameScene::processInput(const Array<WinEvent>& events)
 {
         for (const WinEvent& event : events)
         {
+			if(enableCameraInput_)
                 camera_.processEvent(event);
 
                 if (event.type == WinEvent::Key && event.key.action != GLFW_RELEASE)
@@ -904,8 +1229,44 @@ void GameScene::render(const GLuint program)
         updateGLBuffers(glBuffers_, rects, textCount);
         renderGLBuffers(glBuffers_, textCount);
 
-    ImGui::Begin("main");
-    ImGui::Spacing();
-        camera_.imgui();
-    ImGui::End();
+		// render test qube
+		{
+			bindProgram(p3d_);
+			uniformMat4(p3d_, "view", camera_.view);
+
+			mat4 projection = perspective(45.f, frame_.fbSize.x / frame_.fbSize.y, 0.1f, 100.f);
+			uniformMat4(p3d_, "projection", projection);
+			uniform3f(p3d_, "lightPos", vec3(6.f, 6.f, 10.f));
+
+			static float time = 0.f;
+			time += frame_.time * 10.f;
+			
+			QubeInstance q;
+			q.color = vec4(0.f, 1.f, 0.f, 1.f);
+			q.modelMatrix = rotateY(time);
+
+			glBindBuffer(GL_ARRAY_BUFFER, vboIA_);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(q), &q, GL_STREAM_DRAW);
+
+			glBindVertexArray(vao_);
+
+			glClear(GL_DEPTH_BUFFER_BIT);
+
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
+
+			glCullFace(GL_BACK);
+			glFrontFace(GL_CCW);
+
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 1 * 36, 1);
+
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+		}
+
+		ImGui::Begin("main");
+		ImGui::Spacing();
+		ImGui::Checkbox("enable camera input", &enableCameraInput_);
+			camera_.imgui();
+		ImGui::End();
 }

@@ -40,6 +40,11 @@ static GLint getUniformLocation(GLuint program, const char* const name)
 
 // @TODO(matiTechno): inline?
 
+void uniformMat4(const GLuint program, const char* const name, const mat4& m)
+{
+    glUniformMatrix4fv(getUniformLocation(program, name), 1, false, &m[0][0]);
+}
+
 void uniform1i(const GLuint program, const char* const name, const int i)
 {
     glUniform1i(getUniformLocation(program, name), i);

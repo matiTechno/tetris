@@ -265,6 +265,9 @@ struct mat4
 	vec4 j = { 0.f, 1.f, 0.f, 0.f };
 	vec4 k = { 0.f, 0.f, 1.f, 0.f };
 	vec4 w = { 0.f, 0.f, 0.f, 1.f };
+
+	vec4& operator[](int idx) { return *(&i + idx); }
+	const vec4& operator[](int idx) const { return *(&i + idx); }
 };
 
 inline vec4 operator*(const mat4& m, vec4 v)
