@@ -689,6 +689,31 @@ struct QubeInstance
 	mat4 modelMatrix;
 };
 
+const char* const vertLines = R"(
+#version 330
+
+layout(location = 0) in vec3 vertex;
+
+uniform mat4 projection;
+uniform mat4 view;
+
+void main()
+{
+	gl_Position = projection * view * vec4(vertex, 1.0);
+}
+)";
+
+const char* const fragLines = R"(
+#version 330
+
+out vec4 oColor;
+
+void main()
+{
+    oColor = vec4(1.f, 0.f, 0.5f, 1.f);
+}
+)";
+
 const char* const vert3d = R"(
 #version 330
 
@@ -754,10 +779,14 @@ GameScene::GameScene()
 
 		p3d_ = createProgram(vert3d, frag3d);
 		assert(p3d_);
+		programLines_ = createProgram(vertLines, fragLines);
+		assert(programLines_);
 
 		glGenBuffers(1, &vboQube_);
 		glGenBuffers(1, &vboIA_);
+		glGenBuffers(1, &vboLines_);
 		glGenVertexArrays(1, &vao_);
+		glGenVertexArrays(1, &vaoLines_);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vboQube_);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(qubeModel), qubeModel, GL_STATIC_DRAW);
@@ -780,26 +809,44 @@ GameScene::GameScene()
 		glBindBuffer(GL_ARRAY_BUFFER, vboIA_);
 
 		// color
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(QubeInstance), nullptr);
 		glEnableVertexAttribArray(3);
 		glVertexAttribDivisor(3, 1);
 
 		// model matrix
-		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)sizeof(vec4));
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(QubeInstance), (const void*)sizeof(vec4));
 		glEnableVertexAttribArray(4);
 		glVertexAttribDivisor(4, 1);
 
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(vec4) * 2));
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(QubeInstance), (const void*)(sizeof(vec4) * 2));
 		glEnableVertexAttribArray(5);
 		glVertexAttribDivisor(5, 1);
 
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(vec4) * 3));
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(QubeInstance), (const void*)(sizeof(vec4) * 3));
 		glEnableVertexAttribArray(6);
 		glVertexAttribDivisor(6, 1);
 
-		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(sizeof(vec4) * 4));
+		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(QubeInstance), (const void*)(sizeof(vec4) * 4));
 		glEnableVertexAttribArray(7);
 		glVertexAttribDivisor(7, 1);
+
+		// lines
+
+		float linesData[12] = {
+			0.f, 20.f, 0.f,
+			0.f, 0.f, 0.f,
+			10.f, 0.f, 0.f,
+			10.f, 20.f, 0.f
+		};
+
+		glBindVertexArray(vaoLines_);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vboLines_);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(linesData), linesData, GL_STATIC_DRAW);
+
+		// pos
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+		glEnableVertexAttribArray(0);
 
         for (int y = 0; y < map_.size.y; ++y)
         {
@@ -817,7 +864,9 @@ GameScene::GameScene()
         spawnNewTetrimino(tetrimino_);
         spawnNewTetrimino(tetNext_);
 
-		camera_.pos = vec3(0.f, 1.f, 5.f);
+		camera_.pos = vec3(6.523, 12.832f, 10.581f);
+		camera_.pitch = -9.6f;
+		camera_.yaw = -0.5f;
 }
 
 GameScene::~GameScene()
@@ -826,9 +875,12 @@ GameScene::~GameScene()
         deleteFont(font_);
 
 		deleteProgram(p3d_);
+		deleteProgram(programLines_);
 		glDeleteBuffers(1, &vboQube_);
 		glDeleteBuffers(1, &vboIA_);
+		glDeleteBuffers(1, &vboLines_);
 		glDeleteVertexArrays(1, &vao_);
+		glDeleteVertexArrays(1, &vaoLines_);
 }
 
 void GameScene::processInput(const Array<WinEvent>& events)
@@ -852,8 +904,12 @@ void GameScene::processInput(const Array<WinEvent>& events)
                                 spawnNewTetrimino(tetNext_);
 
                                 gameOver_ = false;
-				score_ = 0;
+								score_ = 0;
                         }
+						else if (event.key.key == GLFW_KEY_2)
+						{
+							render3d_ = !render3d_;
+						}
 
                         if(gameOver_)
                             continue;
@@ -1051,8 +1107,24 @@ void GameScene::update()
         }
 }
 
+struct Tile
+{
+	ivec2 pos;
+	vec4 color;
+};
+
+static FixedArray<Tile, 1024> tilesInfo;
+
 void GameScene::render(const GLuint program)
 {
+		tilesInfo.clear();
+
+		for(Rect& r: map_.rects)
+		{ 
+				if (r.color != map_.baseColor)
+					tilesInfo.pushBack(Tile{ ivec2(r.pos), r.color });
+		}
+
         Rect rects[256];
         bindProgram(program);
         Camera camera;
@@ -1064,10 +1136,13 @@ void GameScene::render(const GLuint program)
         uniform2f(program, "cameraPos", camera.pos);
         uniform2f(program, "cameraSize", camera.size);
 
-        uniform1i(program, "mode", FragmentMode::Color);
+		uniform1i(program, "mode", FragmentMode::Color);
 
-        updateGLBuffers(glBuffers_, map_.rects, getSize(map_.rects));
-        renderGLBuffers(glBuffers_, getSize(map_.rects));
+		if (!render3d_)
+		{
+			updateGLBuffers(glBuffers_, map_.rects, getSize(map_.rects));
+			renderGLBuffers(glBuffers_, getSize(map_.rects));
+		}
 
 
         int rectIdx = 0;
@@ -1083,7 +1158,13 @@ void GameScene::render(const GLuint program)
                                 rects[rectIdx].size = vec2(1.f);
                                 rects[rectIdx].rotation = 0.f;
                                 rects[rectIdx].pos = vec2(tetrimino_.pos + ivec2(i, j));
-                                ++rectIdx;
+
+
+								tilesInfo.pushBack( Tile{ tetrimino_.pos + ivec2(i, j), rects[rectIdx].color } );
+
+								if(!render3d_)
+									++rectIdx;
+
                         }
                 }
         }
@@ -1148,13 +1229,74 @@ void GameScene::render(const GLuint program)
                                 rects[rectIdx].rotation = 0.f;
                                 rects[rectIdx].pos = vec2(shadowTilePos);
 
-                                ++rectIdx;
+								tilesInfo.pushBack( Tile{ shadowTilePos, vec4(1.f, 1.f, 1.f, 0.4f) } );
+
+								if(!render3d_)
+									++rectIdx;
                         }
                 }
         }
 
         updateGLBuffers(glBuffers_, rects, rectIdx);
         renderGLBuffers(glBuffers_, rectIdx);
+
+		// render3d
+		if(render3d_)
+		{
+			bindProgram(p3d_);
+			uniformMat4(p3d_, "view", camera_.view);
+
+			mat4 projection = perspective(45.f, frame_.fbSize.x / frame_.fbSize.y, 0.1f, 100.f);
+			uniformMat4(p3d_, "projection", projection);
+			uniform3f(p3d_, "lightPos", vec3(6.f, 6.f, 10.f));
+
+			static float time = 0.f;
+			time += frame_.time * 10.f;
+			
+			{
+				static FixedArray<QubeInstance, 1024> instances;
+				instances.clear();
+
+				for (Tile& t : tilesInfo)
+				{
+					QubeInstance i;
+					i.color = t.color;
+					i.modelMatrix = translate(vec3(0.5) + vec3(t.pos.x, 19 - t.pos.y + 0.05f, -1.f));
+					instances.pushBack(i);
+				}
+
+				glBindBuffer(GL_ARRAY_BUFFER, vboIA_);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(QubeInstance) * instances.size(), instances.data(), GL_STREAM_DRAW);
+
+				glBindVertexArray(vao_);
+
+				glClear(GL_DEPTH_BUFFER_BIT);
+
+				glEnable(GL_DEPTH_TEST);
+				glEnable(GL_CULL_FACE);
+
+				glCullFace(GL_BACK);
+				glFrontFace(GL_CCW);
+
+				// draw qubes
+				glDrawArraysInstanced(GL_TRIANGLES, 0, 36, instances.size());
+			}
+
+			// draw lines
+
+			bindProgram(programLines_);
+			uniformMat4(programLines_, "view", camera_.view);
+			uniformMat4(programLines_, "projection", projection);
+
+			glBindVertexArray(vaoLines_);
+
+			glDrawArrays(GL_LINE_STRIP, 0, 4);
+
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+
+			bindProgram(program);
+		}
 
         int textCount = 0;
 
@@ -1220,49 +1362,14 @@ void GameScene::render(const GLuint program)
 
         Text text;
         text.color = { 1.f, 1.f, 0.f, 1.f };
-        text.pos = vec2(200.f, 600.f);
-        text.str = "T E T R I S  3D\nHELL YEA!";
+        text.pos = vec2(50.f, 600.f);
+        text.str = "T E T R I S  3D\nHELL YEA!\n\npress 2 to switch\nbetween 2d and 3d";
 
         textCount = writeTextToBuffer(text, font_, rects, getSize(rects));
         uniform1i(program, "mode", FragmentMode::Font);
         bindTexture(font_.texture);
         updateGLBuffers(glBuffers_, rects, textCount);
         renderGLBuffers(glBuffers_, textCount);
-
-		// render test qube
-		{
-			bindProgram(p3d_);
-			uniformMat4(p3d_, "view", camera_.view);
-
-			mat4 projection = perspective(45.f, frame_.fbSize.x / frame_.fbSize.y, 0.1f, 100.f);
-			uniformMat4(p3d_, "projection", projection);
-			uniform3f(p3d_, "lightPos", vec3(6.f, 6.f, 10.f));
-
-			static float time = 0.f;
-			time += frame_.time * 10.f;
-			
-			QubeInstance q;
-			q.color = vec4(0.f, 1.f, 0.f, 1.f);
-			q.modelMatrix = rotateY(time);
-
-			glBindBuffer(GL_ARRAY_BUFFER, vboIA_);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(q), &q, GL_STREAM_DRAW);
-
-			glBindVertexArray(vao_);
-
-			glClear(GL_DEPTH_BUFFER_BIT);
-
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_CULL_FACE);
-
-			glCullFace(GL_BACK);
-			glFrontFace(GL_CCW);
-
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 1 * 36, 1);
-
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_CULL_FACE);
-		}
 
 		ImGui::Begin("main");
 		ImGui::Spacing();

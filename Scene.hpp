@@ -304,8 +304,13 @@ private:
 
 	GLuint p3d_;
 	GLuint vboQube_;
+	GLuint vboLines_;
+	GLuint vaoLines_;
 	GLuint vboIA_; // instanced attributes
 	GLuint vao_;
+	GLuint programLines_;
+
+	bool render3d_ = true;
 
 	bool enableCameraInput_ = false;
 };
